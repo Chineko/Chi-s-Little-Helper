@@ -2,6 +2,9 @@ name: Build Repo Listing
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - .listing/REQUEST
   workflow_run:
     workflows: [Build Release]
     types: [completed]
@@ -9,29 +12,27 @@ on:
     types: [published, created, edited, unpublished, deleted, released]
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
-  group: pages
+  group: vpm-listing
   cancel-in-progress: true
 
 env:
   PACKAGE_NAME: com.chineko.chis-little-helper
   LIST_PUBLISH_DIRECTORY: Website
   CI_PATH: ci
+  RAW_LISTING_URL: https://raw.githubusercontent.com/Chineko/Chi-s-Little-Helper/main/Website/index.json
 
 jobs:
   build-listing:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout package repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Checkout VRChat package listing automation
         uses: actions/checkout@v4
@@ -58,14 +59,22 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
+      - name: Set canonical raw listing URL
+        shell: bash
+        run: |
+          jq --arg url "$RAW_LISTING_URL" '.url = $url' Website/index.json > Website/index.json.tmp
+          mv Website/index.json.tmp Website/index.json
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ${{ env.LIST_PUBLISH_DIRECTORY }}
-
-      - name: Deploy GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Commit VPM listing
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Website/index.json
+          if git diff --cached --quiet; then
+            echo "VPM listing is already up to date."
+          else
+            git commit -m "Update VPM repository listing"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
