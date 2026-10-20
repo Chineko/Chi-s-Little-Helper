@@ -2,9 +2,6 @@ name: Build Repo Listing
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - .listing/REQUEST
   workflow_run:
     workflows: [Build Release]
     types: [completed]
