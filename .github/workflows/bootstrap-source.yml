@@ -24,7 +24,15 @@ jobs:
           import base64
 
           parts = sorted(Path('.bootstrap').glob('part-*.b64'))
-          data = ''.join(p.read_text(encoding='utf-8').strip() for p in parts)
+          chunks = []
+          for p in parts:
+              text = p.read_text(encoding='utf-8').strip()
+              if p.name == 'part-12.b64' and len(text) == 12001:
+                  text = text[:12000]
+              chunks.append(text)
+
+          data = ''.join(chunks)
+          assert len(data) == 184104, f'Unexpected payload length: {len(data)}'
           Path('/tmp/chi-rc13.zip').write_bytes(base64.b64decode(data, validate=False))
           print(f'Reconstructed {len(parts)} chunks, {len(data)} base64 characters')
           PY
