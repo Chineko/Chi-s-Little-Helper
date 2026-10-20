@@ -1,0 +1,136 @@
+name: RC16 Ko-fi Support
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .maintenance/rc16-kofi-request
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  patch-release:
+    runs-on: ubuntu-latest
+    env:
+      PACKAGE_NAME: com.chineko.chis-little-helper
+      PACKAGE_PATH: Packages/com.chineko.chis-little-helper
+      VERSION: 1.0.0-rc.16
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch Ko-fi support button
+        shell: python
+        run: |
+          from pathlib import Path
+          import json
+
+          pkg = Path("Packages/com.chineko.chis-little-helper")
+          editor = pkg / "Editor"
+
+          # Version bump
+          main = editor / "ChiLittleHelperWindow.cs"
+          text = main.read_text(encoding="utf-8")
+          old = 'public const string TOOL_VERSION = "1.0.0-rc.15";'
+          new = 'public const string TOOL_VERSION = "1.0.0-rc.16";'
+          if old not in text:
+              raise SystemExit("TOOL_VERSION rc.15 not found")
+          main.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          # Preferences/About Ko-fi button
+          home = editor / "ChiLittleHelper.HomePreferences.cs"
+          text = home.read_text(encoding="utf-8")
+          anchor = '''        DrawDiagnosticRow("Toolkit", TOOL_VERSION + " · " + RELEASE_CHANNEL);\n        DrawDiagnosticRow("Purpose", "VRChat avatar workflow helper");\n        GUILayout.Space(5);\n\n        EditorGUILayout.LabelField(\n            "Known limitations",'''
+          replacement = '''        DrawDiagnosticRow("Toolkit", TOOL_VERSION + " · " + RELEASE_CHANNEL);\n        DrawDiagnosticRow("Purpose", "VRChat avatar workflow helper");\n        GUILayout.Space(7);\n\n        EditorGUILayout.LabelField(\n            "Support Chi's Little Helper",\n            new GUIStyle(EditorStyles.boldLabel)\n            {\n                normal = { textColor = ColTextPrimary }\n            });\n        EditorGUILayout.LabelField(\n            "If Chi's Little Helper saves you time and you would like to support its development, you can optionally leave a tip on Ko-fi.",\n            styleInfoText);\n\n        GUILayout.Space(5);\n        if (HelpButton(\n            "♥  Support on Ko-fi",\n            "Open Chineko's Ko-fi page in your default browser.",\n            styleBtnGrad,\n            GUILayout.Height(32),\n            GUILayout.ExpandWidth(true)))\n        {\n            Application.OpenURL("https://ko-fi.com/chineko0001");\n        }\n\n        GUILayout.Space(9);\n\n        EditorGUILayout.LabelField(\n            "Known limitations",'''
+          if anchor not in text:
+              raise SystemExit("About anchor not found")
+          home.write_text(text.replace(anchor, replacement, 1), encoding="utf-8")
+
+          # Package version
+          package_json = pkg / "package.json"
+          data = json.loads(package_json.read_text(encoding="utf-8"))
+          data["version"] = "1.0.0-rc.16"
+          package_json.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+
+          # Package changelog
+          changelog = pkg / "CHANGELOG.md"
+          text = changelog.read_text(encoding="utf-8")
+          entry = '''# Changelog\n\n## 1.0.0-rc.16\n- Added an optional **Support on Ko-fi** button under **Settings & Preferences → About & Known Limitations**.\n- The button opens `https://ko-fi.com/chineko0001` in the user's default browser.\n- The support prompt is passive and does not use popups, reminders, or donation nags.\n- Added a matching Ko-fi link to the VCC/GitHub Pages landing page.\n\n'''
+          if text.startswith("# Changelog\n\n"):
+              text = entry + text[len("# Changelog\n\n"):]
+          else:
+              text = entry + text
+          changelog.write_text(text, encoding="utf-8")
+
+          # Root README version
+          root_readme = Path("README.md")
+          if root_readme.exists():
+              text = root_readme.read_text(encoding="utf-8")
+              text = text.replace("Current package release: **1.0.0-rc.15**", "Current package release: **1.0.0-rc.16**")
+              root_readme.write_text(text, encoding="utf-8")
+
+          # VCC landing page donation button
+          page = Path("docs/index.html")
+          if page.exists():
+              text = page.read_text(encoding="utf-8")
+              button_anchor = '''      <a class="button secondary" href="https://raw.githubusercontent.com/Chineko/Chi-s-Little-Helper/main/Website/index.json">View repository manifest</a>'''
+              button_replacement = '''      <a class="button secondary" href="https://raw.githubusercontent.com/Chineko/Chi-s-Little-Helper/main/Website/index.json">View repository manifest</a>\n      <a class="button secondary" href="https://ko-fi.com/chineko0001" target="_blank" rel="noopener noreferrer">♥ Support on Ko-fi</a>'''
+              if button_anchor not in text:
+                  raise SystemExit("Landing page button anchor not found")
+              page.write_text(text.replace(button_anchor, button_replacement, 1), encoding="utf-8")
+
+      - name: Validate patch
+        shell: bash
+        run: |
+          grep -q 'TOOL_VERSION = "1.0.0-rc.16"' "$PACKAGE_PATH/Editor/ChiLittleHelperWindow.cs"
+          grep -q 'Support on Ko-fi' "$PACKAGE_PATH/Editor/ChiLittleHelper.HomePreferences.cs"
+          grep -q 'https://ko-fi.com/chineko0001' "$PACKAGE_PATH/Editor/ChiLittleHelper.HomePreferences.cs"
+          grep -q 'https://ko-fi.com/chineko0001' docs/index.html
+          test "$(jq -r '.version' "$PACKAGE_PATH/package.json")" = "$VERSION"
+
+      - name: Commit RC16 source
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Packages/com.chineko.chis-little-helper README.md docs/index.html
+          git commit -m "Add optional Ko-fi support link for RC16"
+          git push origin HEAD:main
+
+      - name: Build VPM ZIP
+        shell: bash
+        run: |
+          cd "$PACKAGE_PATH"
+          zip -r "$GITHUB_WORKSPACE/${PACKAGE_NAME}-${VERSION}.zip" . \
+            -x '*.DS_Store' -x '*/.DS_Store'
+
+      - name: Publish RC16 release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: Chi's Little Helper ${{ env.VERSION }}
+          target_commitish: main
+          prerelease: true
+          generate_release_notes: true
+          files: |
+            ${{ env.PACKAGE_NAME }}-${{ env.VERSION }}.zip
+            ${{ env.PACKAGE_PATH }}/package.json
+
+      - name: Request VPM listing rebuild
+        shell: bash
+        run: |
+          git pull --rebase origin main
+          mkdir -p .listing
+          echo "Build VPM listing for ${VERSION}" > .listing/REQUEST
+          git add .listing/REQUEST
+          if git diff --cached --quiet; then
+            echo "Listing request already current."
+          else
+            git commit -m "Build VPM listing for RC16"
+            git push origin HEAD:main
+          fi
