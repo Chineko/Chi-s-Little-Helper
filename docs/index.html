@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Install Chi's Little Helper with VCC</title>
+  <meta name="description" content="Add Chi's Little Helper to VRChat Creator Companion." />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #081426;
+      --card: #0e1c31;
+      --border: #2a3d60;
+      --text: #ffffff;
+      --muted: #9baac2;
+      --lavender: #ddbbff;
+      --pink: #f080dc;
+      --purple: #8a5cff;
+      --button: #172845;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 50% 0%, #182b4d 0, var(--bg) 52%);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      padding: 24px;
+    }
+    .card {
+      width: min(720px, 100%);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--lavender);
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: .03em;
+    }
+    h1 { margin: 14px 0 8px; font-size: clamp(28px, 5vw, 42px); }
+    p { color: var(--muted); line-height: 1.6; }
+    .actions { display: grid; gap: 12px; margin-top: 22px; }
+    .button {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      color: white;
+      font-weight: 800;
+      padding: 14px 18px;
+      border-radius: 11px;
+      border: 1px solid #b96cf0;
+      background: linear-gradient(90deg, var(--purple), var(--pink));
+    }
+    .button.secondary {
+      background: var(--button);
+      border-color: var(--border);
+      color: var(--lavender);
+    }
+    code {
+      display: block;
+      overflow-wrap: anywhere;
+      background: #09172a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      color: var(--lavender);
+      margin-top: 8px;
+    }
+    .small { font-size: 13px; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <span class="badge">VCC / VPM</span>
+    <h1>Chi's Little Helper</h1>
+    <p>Add the Chi's Little Helper package repository to VRChat Creator Companion, then install it from your project's package list.</p>
+
+    <div class="actions">
+      <a class="button" href="vcc://vpm/addRepo?url=https%3A%2F%2Fraw.githubusercontent.com%2FChineko%2FChi-s-Little-Helper%2Fmain%2FWebsite%2Findex.json">Add to VCC</a>
+      <a class="button secondary" href="https://raw.githubusercontent.com/Chineko/Chi-s-Little-Helper/main/Website/index.json">View repository manifest</a>
+    </div>
+
+    <p class="small">If your browser asks for permission to open VRChat Creator Companion, allow it. If the button does not launch VCC, copy this repository URL into VCC manually:</p>
+    <code>https://raw.githubusercontent.com/Chineko/Chi-s-Little-Helper/main/Website/index.json</code>
+
+    <p class="small"><strong>Important:</strong> remove older manually installed copies of Chi's Little Helper before installing the VCC-managed package.</p>
+  </main>
+</body>
+</html>
