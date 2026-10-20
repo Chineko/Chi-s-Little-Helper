@@ -42,27 +42,33 @@ jobs:
               'part-16.b64': 'a3d1c071dfe71bf7b77ef5375dcd27ca43d5cccad7cf22d84ac56c58677feb42',
           }
 
-          parts = sorted(Path('.bootstrap').glob('part-*.b64'))
-          chunks = []
-          bad = []
-          for p in parts:
-              text = p.read_text(encoding='utf-8').strip()
-              digest = hashlib.sha256(text.encode('utf-8')).hexdigest()
-              ok = digest == expected.get(p.name)
-              print(f'{p.name}: len={len(text)} sha256={digest} ' + ('OK' if ok else 'MISMATCH'))
-              if not ok:
-                  bad.append(p.name)
-              chunks.append(text)
+          fixed09 = ''.join(
+              (Path('.bootstrap') / f'fix09-{i:02d}.b64').read_text(encoding='utf-8').strip()
+              for i in range(1, 5)
+          )
+          assert len(fixed09) == 12000, f'Unexpected fixed part 09 length: {len(fixed09)}'
+          assert hashlib.sha256(fixed09.encode('utf-8')).hexdigest() == expected['part-09.b64'], 'Fixed part 09 hash mismatch'
 
-          if bad:
-              raise SystemExit('Payload chunk mismatch: ' + ', '.join(bad))
+          chunks = []
+          for i in range(1, 17):
+              name = f'part-{i:02d}.b64'
+              if name == 'part-09.b64':
+                  text = fixed09
+              else:
+                  text = (Path('.bootstrap') / name).read_text(encoding='utf-8').strip()
+
+              digest = hashlib.sha256(text.encode('utf-8')).hexdigest()
+              assert digest == expected[name], f'{name} hash mismatch: {digest}'
+              chunks.append(text)
+              print(f'{name}: OK')
 
           data = ''.join(chunks)
           assert len(data) == 184104, f'Unexpected payload length: {len(data)}'
           Path('/tmp/chi-rc13.zip').write_bytes(base64.b64decode(data, validate=True))
-          print(f'Reconstructed {len(parts)} verified chunks, {len(data)} base64 characters')
+          print(f'Reconstructed verified RC13 archive ({len(data)} base64 chars)')
           PY
           mkdir -p /tmp/chi-rc13
+          unzip -tq /tmp/chi-rc13.zip
           unzip -q /tmp/chi-rc13.zip -d /tmp/chi-rc13
 
       - name: Import package source
@@ -90,8 +96,7 @@ jobs:
               return hashlib.md5(('ChiLittleHelper:' + rel.replace('\\', '/')).encode('utf-8')).hexdigest()
 
           editor = root / 'Editor'
-          editor_meta = root / 'Editor.meta'
-          editor_meta.write_text(
+          (root / 'Editor.meta').write_text(
               'fileFormatVersion: 2\n'
               f'guid: {guid("Editor")}\n'
               'folderAsset: yes\n'
@@ -105,10 +110,8 @@ jobs:
           for path in sorted(editor.iterdir()):
               if not path.is_file() or path.suffix == '.meta':
                   continue
-
               rel = path.relative_to(root).as_posix()
               meta = Path(str(path) + '.meta')
-
               if path.suffix == '.cs':
                   body = (
                       'fileFormatVersion: 2\n'
@@ -135,7 +138,6 @@ jobs:
                   )
               else:
                   continue
-
               meta.write_text(body, encoding='utf-8')
           PY
 
