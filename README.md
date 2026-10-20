@@ -4,7 +4,9 @@ A modular Unity Editor toolkit for VRChat avatar creation, diagnostics, optimiza
 
 ## Status
 
-Chi's Little Helper is currently in the 1.0 release-candidate phase. The repository is being prepared as a VPM/VCC package so future releases can be installed and updated through the VRChat Creator Companion.
+Chi's Little Helper is currently in the 1.0 release-candidate phase and is available as a VPM/VCC package.
+
+Current package release: **1.0.0-rc.13**
 
 ## Package ID
 
@@ -22,17 +24,31 @@ Chi's Little Helper is currently in the 1.0 release-candidate phase. The reposit
 - VRCFury workflow helpers and Overview++
 - Presets, snapshots, reports, support bundles, and installation-health checks
 
-## VCC / VPM
+## Install with VCC
 
-After the first package release is published, this repository will expose a VPM listing through GitHub Pages. Users will be able to add the listing to VCC and install/update Chi's Little Helper from **Manage Project → Packages**.
+Before switching to the VCC-managed package, remove any older manually copied Chi's Little Helper folder from your Unity project. Do not keep manual and VPM installations side-by-side.
 
-## Development
+### One-click repository link
+
+[VCC: Add Chi's Little Helper Repository](vcc://vpm/addRepo?url=https://raw.githubusercontent.com/Chineko/Chi-s-Little-Helper/main/Website/index.json)
+
+### Repository URL
+
+If the one-click link does not open VCC, add this repository URL manually in the VRChat Creator Companion:
+
+`https://raw.githubusercontent.com/Chineko/Chi-s-Little-Helper/main/Website/index.json`
+
+Then open your avatar project in VCC and install **Chi's Little Helper** from **Manage Project → Packages**.
+
+## Releases and updates
 
 The distributable package lives under:
 
 `Packages/com.chineko.chis-little-helper`
 
-The release workflow packages that directory as a VPM-compatible ZIP and publishes the version from `package.json`.
+The **Build Release** GitHub Actions workflow packages that directory as a VPM-compatible ZIP and publishes the version from `package.json`.
+
+The **Build Repo Listing** workflow rebuilds the VPM repository listing after releases, so newer package versions can appear as updates in VCC.
 
 ## License
 
