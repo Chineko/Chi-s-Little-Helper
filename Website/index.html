@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ listingInfo.Name }}</title>
+  <meta name="description" content="{{ listingInfo.Description }}">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <section class="card hero">
+      <div class="eyebrow">VRChat Creator Companion package</div>
+      <h1>{{ listingInfo.Name }}</h1>
+      <p>{{ listingInfo.Description }}</p>
+      <div class="actions">
+        <button id="add-vcc" type="button">Add to VCC</button>
+        <button id="copy-url" class="secondary" type="button">Copy repository URL</button>
+      </div>
+      <label for="repo-url">VPM repository URL</label>
+      <input id="repo-url" value="{{ listingInfo.Url }}" readonly>
+    </section>
+
+    <section class="card">
+      <h2>Chi's Little Helper</h2>
+      <p>A modular Unity Editor toolkit for VRChat avatar development, diagnostics, optimization, animation management, VRCFury workflows, presets, and release-safety tooling.</p>
+      <p><a href="https://github.com/Chineko/Chi-s-Little-Helper">View source and releases on GitHub</a></p>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
