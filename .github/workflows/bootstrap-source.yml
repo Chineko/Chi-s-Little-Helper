@@ -19,9 +19,7 @@ jobs:
       - name: Reconstruct RC13 archive
         shell: bash
         run: |
-          for f in .bootstrap/part-*.b64; do
-            base64 --decode "$f"
-          done > /tmp/chi-rc13.zip
+          cat .bootstrap/part-*.b64 | base64 --decode --ignore-garbage > /tmp/chi-rc13.zip
           mkdir -p /tmp/chi-rc13
           unzip -q /tmp/chi-rc13.zip -d /tmp/chi-rc13
 
