@@ -1,0 +1,55 @@
+name: Build Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  PACKAGE_NAME: com.chineko.chis-little-helper
+  PACKAGE_PATH: Packages/com.chineko.chis-little-helper
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read package version
+        id: version
+        shell: bash
+        run: |
+          VERSION=$(jq -r '.version' "${PACKAGE_PATH}/package.json")
+          if [ -z "$VERSION" ] || [ "$VERSION" = "null" ]; then
+            echo "package.json does not contain a valid version" >&2
+            exit 1
+          fi
+          echo "value=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "zip=${PACKAGE_NAME}-${VERSION}.zip" >> "$GITHUB_OUTPUT"
+
+      - name: Validate package
+        shell: bash
+        run: |
+          test -f "${PACKAGE_PATH}/package.json"
+          test -d "${PACKAGE_PATH}/Editor"
+
+      - name: Build VPM ZIP
+        shell: bash
+        run: |
+          cd "${PACKAGE_PATH}"
+          zip -r "${GITHUB_WORKSPACE}/${{ steps.version.outputs.zip }}" . \
+            -x '*.DS_Store' -x '*/.DS_Store'
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.value }}
+          name: Chi's Little Helper ${{ steps.version.outputs.value }}
+          prerelease: ${{ contains(steps.version.outputs.value, '-') }}
+          generate_release_notes: true
+          files: |
+            ${{ steps.version.outputs.zip }}
+            ${{ env.PACKAGE_PATH }}/package.json
