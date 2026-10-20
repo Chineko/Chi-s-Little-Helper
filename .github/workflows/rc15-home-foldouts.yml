@@ -1,0 +1,198 @@
+name: RC15 Home Foldouts
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .maintenance/rc15-home-foldouts-request
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  patch-release:
+    runs-on: ubuntu-latest
+    env:
+      PACKAGE_NAME: com.chineko.chis-little-helper
+      PACKAGE_PATH: Packages/com.chineko.chis-little-helper
+      VERSION: 1.0.0-rc.15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch Home foldouts and preference
+        shell: python
+        run: |
+          from pathlib import Path
+          import json
+
+          pkg = Path("Packages/com.chineko.chis-little-helper")
+          editor = pkg / "Editor"
+
+          # ---- shared state / preference ----
+          main = editor / "ChiLittleHelperWindow.cs"
+          text = main.read_text(encoding="utf-8")
+
+          text = text.replace(
+              '[SerializeField] bool homeShowRoadmap = true;\n',
+              '[SerializeField] bool homeShowRoadmap = true;\n'
+              '    [SerializeField] bool homeShowQuickActions = true;\n'
+              '    [SerializeField] bool homeShowAllTools = true;\n'
+              '    [SerializeField] bool homeShowBuildTools = true;\n'
+              '    [SerializeField] bool homeShowDynamicsTools = true;\n'
+              '    [SerializeField] bool homeShowMaterialsTools = true;\n'
+              '    [SerializeField] bool homeShowOptimizeTools = true;\n'
+              '    [SerializeField] bool homeShowDoctorTools = true;\n',
+              1)
+
+          text = text.replace(
+              'const string PREF_ONBOARDING_DISMISSED = "ChiLittleHelper.OnboardingDismissed";\n',
+              'const string PREF_ONBOARDING_DISMISSED = "ChiLittleHelper.OnboardingDismissed";\n'
+              '    const string PREF_SHOW_HOME_QUICK_ACTIONS = "ChiLittleHelper.ShowHomeQuickActions";\n',
+              1)
+
+          text = text.replace(
+              'bool onboardingDismissed = false;\n',
+              'bool onboardingDismissed = false;\n'
+              '    bool showHomeQuickActions = true;\n',
+              1)
+
+          text = text.replace(
+              'onboardingDismissed = EditorPrefs.GetBool(PREF_ONBOARDING_DISMISSED, false);\n',
+              'onboardingDismissed = EditorPrefs.GetBool(PREF_ONBOARDING_DISMISSED, false);\n'
+              '        showHomeQuickActions = EditorPrefs.GetBool(PREF_SHOW_HOME_QUICK_ACTIONS, true);\n',
+              1)
+
+          text = text.replace(
+              'public const string TOOL_VERSION = "1.0.0-rc.14";',
+              'public const string TOOL_VERSION = "1.0.0-rc.15";',
+              1)
+
+          main.write_text(text, encoding="utf-8")
+
+          # ---- Home: wrap Quick Actions in preference + foldout ----
+          home = editor / "ChiLittleHelper.HomePreferences.cs"
+          text = home.read_text(encoding="utf-8")
+
+          quick_start = text.index('        EditorGUILayout.LabelField("Quick Actions"')
+          quick_end_marker = '        GUILayout.Space(12);\n        DrawHomeToolDirectory();'
+          quick_end = text.index(quick_end_marker, quick_start)
+          quick_block = text[quick_start:quick_end]
+
+          wrapped = '''        if (showHomeQuickActions)\n        {\n            if (GUILayout.Button(homeShowQuickActions ? "▼  Hide Quick Actions" : "▶  Show Quick Actions",\n                styleBtnDark, GUILayout.Height(30), GUILayout.ExpandWidth(true)))\n                homeShowQuickActions = !homeShowQuickActions;\n\n            if (homeShowQuickActions)\n            {\n''' + ''.join('    ' + line if line.strip() else line for line in quick_block.splitlines(True)) + '''            }\n\n            GUILayout.Space(8);\n        }\n\n'''
+
+          text = text[:quick_start] + wrapped + text[quick_end:]
+
+          # ---- Preferences: add Home Layout toggle before Onboarding ----
+          onboarding_anchor = '''        GUILayout.Space(12);\n        EditorGUILayout.LabelField("Onboarding", new GUIStyle(EditorStyles.boldLabel)\n        {\n            normal = { textColor = ColLavenderText },\n            fontSize = 13\n        });'''
+
+          home_layout = '''        GUILayout.Space(12);\n        EditorGUILayout.LabelField("Home Layout", new GUIStyle(EditorStyles.boldLabel)\n        {\n            normal = { textColor = ColLavenderText },\n            fontSize = 13\n        });\n        GUILayout.Space(4);\n\n        EditorGUILayout.BeginVertical(styleRowBg);\n        EditorGUILayout.BeginHorizontal();\n        EditorGUILayout.BeginVertical();\n        EditorGUILayout.LabelField("Show Quick Actions on Home", new GUIStyle(EditorStyles.boldLabel)\n        {\n            normal = { textColor = ColTextPrimary }\n        });\n        EditorGUILayout.LabelField(\n            "Hide the curated Quick Actions section when you prefer using the grouped All Tools directory.",\n            styleCardSubtitle);\n        EditorGUILayout.EndVertical();\n        GUILayout.Space(12);\n\n        bool newShowQuickActions = DrawPreferenceSwitch(showHomeQuickActions);\n        if (newShowQuickActions != showHomeQuickActions)\n        {\n            showHomeQuickActions = newShowQuickActions;\n            EditorPrefs.SetBool(PREF_SHOW_HOME_QUICK_ACTIONS, showHomeQuickActions);\n            Repaint();\n        }\n        EditorGUILayout.EndHorizontal();\n        EditorGUILayout.EndVertical();\n\n'''
+
+          if onboarding_anchor not in text:
+              raise SystemExit("Onboarding preferences anchor not found")
+          text = text.replace(onboarding_anchor, home_layout + onboarding_anchor, 1)
+          home.write_text(text, encoding="utf-8")
+
+          # ---- All Tools: top-level + per-category foldouts ----
+          directory = editor / "ChiLittleHelper.HomeToolDirectory.cs"
+          d = directory.read_text(encoding="utf-8")
+
+          old_head = '''        EditorGUILayout.LabelField("All Tools", new GUIStyle(EditorStyles.boldLabel)\n        {\n            normal = { textColor = ColLavenderText },\n            fontSize = 13\n        });\n\n        EditorGUILayout.LabelField(\n            "Every module is available here as well as in the category tabs above.",\n            styleCardSubtitle);\n\n        GUILayout.Space(6);\n\n        for (int categoryIndex = 0; categoryIndex < CategoryLabels.Length; categoryIndex++)\n        {'''
+
+          new_head = '''        if (GUILayout.Button(homeShowAllTools ? "▼  Hide All Tools" : "▶  Show All Tools",\n            styleBtnDark, GUILayout.Height(30), GUILayout.ExpandWidth(true)))\n            homeShowAllTools = !homeShowAllTools;\n\n        if (!homeShowAllTools)\n            return;\n\n        GUILayout.Space(6);\n\n        EditorGUILayout.LabelField(\n            "Every module is available here as well as in the category tabs above. Collapse any category to reduce clutter.",\n            styleCardSubtitle);\n\n        GUILayout.Space(6);\n\n        for (int categoryIndex = 0; categoryIndex < CategoryLabels.Length; categoryIndex++)\n        {'''
+
+          if old_head not in d:
+              raise SystemExit("All Tools header anchor not found")
+          d = d.replace(old_head, new_head, 1)
+
+          old_category = '''            EditorGUILayout.LabelField(CategoryLabels[categoryIndex], new GUIStyle(EditorStyles.boldLabel)\n            {\n                normal = { textColor = ColTextPrimary },\n                fontSize = 11\n            });\n\n            GUILayout.Space(3);\n\n            for (int row = 0; row < visible.Count; row += 2)\n            {'''
+
+          new_category = '''            bool expanded = GetHomeToolCategoryExpanded(categoryIndex);\n            if (GUILayout.Button(\n                (expanded ? "▼  " : "▶  ") + CategoryLabels[categoryIndex] + "  (" + visible.Count + ")",\n                styleBtnDark,\n                GUILayout.Height(28),\n                GUILayout.ExpandWidth(true)))\n            {\n                SetHomeToolCategoryExpanded(categoryIndex, !expanded);\n                expanded = !expanded;\n            }\n\n            if (!expanded)\n            {\n                GUILayout.Space(4);\n                continue;\n            }\n\n            GUILayout.Space(4);\n\n            for (int row = 0; row < visible.Count; row += 2)\n            {'''
+
+          if old_category not in d:
+              raise SystemExit("All Tools category anchor not found")
+          d = d.replace(old_category, new_category, 1)
+
+          insert_before = '''    void DrawHomeToolDirectoryButton(int categoryIndex, int toolId, string label)\n    {'''
+          helpers = '''    bool GetHomeToolCategoryExpanded(int categoryIndex)\n    {\n        switch (categoryIndex)\n        {\n            case 0: return homeShowBuildTools;\n            case 1: return homeShowDynamicsTools;\n            case 2: return homeShowMaterialsTools;\n            case 3: return homeShowOptimizeTools;\n            case 4: return homeShowDoctorTools;\n            default: return true;\n        }\n    }\n\n    void SetHomeToolCategoryExpanded(int categoryIndex, bool value)\n    {\n        switch (categoryIndex)\n        {\n            case 0: homeShowBuildTools = value; break;\n            case 1: homeShowDynamicsTools = value; break;\n            case 2: homeShowMaterialsTools = value; break;\n            case 3: homeShowOptimizeTools = value; break;\n            case 4: homeShowDoctorTools = value; break;\n        }\n    }\n\n'''
+          if insert_before not in d:
+              raise SystemExit("Directory button anchor not found")
+          d = d.replace(insert_before, helpers + insert_before, 1)
+          directory.write_text(d, encoding="utf-8")
+
+          # ---- package + docs ----
+          package_json = pkg / "package.json"
+          data = json.loads(package_json.read_text(encoding="utf-8"))
+          data["version"] = "1.0.0-rc.15"
+          package_json.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+
+          changelog = pkg / "CHANGELOG.md"
+          text = changelog.read_text(encoding="utf-8")
+          entry = '''# Changelog\n\n## 1.0.0-rc.15\n- Added collapsible Home sections to reduce clutter.\n- Quick Actions now has its own Show/Hide foldout.\n- The All Tools directory can be collapsed as a whole.\n- Build, Dynamics, Materials, Optimize and Doctor groups can each be expanded/collapsed independently.\n- Added **Settings & Preferences → Home Layout → Show Quick Actions on Home** to completely disable the Quick Actions section when desired.\n- All tool routing, VRCFury visibility rules and no-avatar disabling behavior remain unchanged.\n\n'''
+          if text.startswith("# Changelog\n"):
+              text = entry + text[len("# Changelog\n\n"):]
+          else:
+              text = entry + text
+          changelog.write_text(text, encoding="utf-8")
+
+          root_readme = Path("README.md")
+          if root_readme.exists():
+              text = root_readme.read_text(encoding="utf-8")
+              text = text.replace("Current package release: **1.0.0-rc.14**", "Current package release: **1.0.0-rc.15**")
+              root_readme.write_text(text, encoding="utf-8")
+
+      - name: Validate patch
+        shell: bash
+        run: |
+          grep -q 'TOOL_VERSION = "1.0.0-rc.15"' "$PACKAGE_PATH/Editor/ChiLittleHelperWindow.cs"
+          grep -q 'PREF_SHOW_HOME_QUICK_ACTIONS' "$PACKAGE_PATH/Editor/ChiLittleHelperWindow.cs"
+          grep -q 'Show Quick Actions on Home' "$PACKAGE_PATH/Editor/ChiLittleHelper.HomePreferences.cs"
+          grep -q 'Hide All Tools' "$PACKAGE_PATH/Editor/ChiLittleHelper.HomeToolDirectory.cs"
+          grep -q 'GetHomeToolCategoryExpanded' "$PACKAGE_PATH/Editor/ChiLittleHelper.HomeToolDirectory.cs"
+          test "$(jq -r '.version' "$PACKAGE_PATH/package.json")" = "$VERSION"
+
+      - name: Commit RC15 source
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Packages/com.chineko.chis-little-helper README.md
+          git commit -m "Add Home foldouts and Quick Actions preference for RC15"
+          git push origin HEAD:main
+
+      - name: Build VPM ZIP
+        shell: bash
+        run: |
+          cd "$PACKAGE_PATH"
+          zip -r "$GITHUB_WORKSPACE/${PACKAGE_NAME}-${VERSION}.zip" . \
+            -x '*.DS_Store' -x '*/.DS_Store'
+
+      - name: Publish RC15 release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: Chi's Little Helper ${{ env.VERSION }}
+          target_commitish: main
+          prerelease: true
+          generate_release_notes: true
+          files: |
+            ${{ env.PACKAGE_NAME }}-${{ env.VERSION }}.zip
+            ${{ env.PACKAGE_PATH }}/package.json
+
+      - name: Request VPM listing rebuild
+        shell: bash
+        run: |
+          git pull --rebase origin main
+          mkdir -p .listing
+          echo "Build VPM listing for ${VERSION}" > .listing/REQUEST
+          git add .listing/REQUEST
+          if git diff --cached --quiet; then
+            echo "Listing request already current."
+          else
+            git commit -m "Build VPM listing for RC15"
+            git push origin HEAD:main
+          fi
