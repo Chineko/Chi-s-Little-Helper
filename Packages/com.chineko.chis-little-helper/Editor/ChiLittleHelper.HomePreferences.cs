@@ -422,83 +422,96 @@ public partial class ChiLittleHelperWindow
 
         GUILayout.Space(10);
 
-        EditorGUILayout.LabelField("Quick Actions", new GUIStyle(EditorStyles.boldLabel)
+        if (showHomeQuickActions)
         {
-            normal = { textColor = ColLavenderText },
-            fontSize = 13
-        });
-        GUILayout.Space(5);
+            if (GUILayout.Button(homeShowQuickActions ? "▼  Hide Quick Actions" : "▶  Show Quick Actions",
+                styleBtnDark, GUILayout.Height(30), GUILayout.ExpandWidth(true)))
+                homeShowQuickActions = !homeShowQuickActions;
 
-        BeginResponsiveButtonRow();
-        using (new EditorGUI.DisabledScope(avatar == null))
-        {
-            if (GUILayout.Button("Outfit Builder", styleBtnDark, GUILayout.Height(32), GUILayout.ExpandWidth(true)))
-                RouteToTool(0, 5);
-            ResponsiveButtonGap();
-            if (GUILayout.Button("PhysBone Manager", styleBtnDark, GUILayout.Height(32), GUILayout.ExpandWidth(true)))
-                RouteToTool(1, 9);
-            ResponsiveButtonGap();
-            if (GUILayout.Button("Texture & VRAM", styleBtnDark, GUILayout.Height(32), GUILayout.ExpandWidth(true)))
-                RouteToTool(3, 11);
+            if (homeShowQuickActions)
+            {
+            EditorGUILayout.LabelField("Quick Actions", new GUIStyle(EditorStyles.boldLabel)
+            {
+                normal = { textColor = ColLavenderText },
+                fontSize = 13
+            });
+            GUILayout.Space(5);
+
+            BeginResponsiveButtonRow();
+            using (new EditorGUI.DisabledScope(avatar == null))
+            {
+                if (GUILayout.Button("Outfit Builder", styleBtnDark, GUILayout.Height(32), GUILayout.ExpandWidth(true)))
+                    RouteToTool(0, 5);
+                ResponsiveButtonGap();
+                if (GUILayout.Button("PhysBone Manager", styleBtnDark, GUILayout.Height(32), GUILayout.ExpandWidth(true)))
+                    RouteToTool(1, 9);
+                ResponsiveButtonGap();
+                if (GUILayout.Button("Texture & VRAM", styleBtnDark, GUILayout.Height(32), GUILayout.ExpandWidth(true)))
+                    RouteToTool(3, 11);
+            }
+            EndResponsiveButtonRow();
+
+            GUILayout.Space(5);
+
+            BeginResponsiveButtonRow();
+            using (new EditorGUI.DisabledScope(avatar == null))
+            {
+                if (GUILayout.Button("Contact Setup", styleBtnDark, GUILayout.Height(32), GUILayout.ExpandWidth(true)))
+                    RouteToTool(1, 6);
+                ResponsiveButtonGap();
+                if (GUILayout.Button("Constraint Toolkit", styleBtnDark, GUILayout.Height(32), GUILayout.ExpandWidth(true)))
+                    RouteToTool(1, 10);
+                ResponsiveButtonGap();
+                if (GUILayout.Button("Avatar Doctor 2.0", styleBtnDark, GUILayout.Height(32), GUILayout.ExpandWidth(true)))
+                    RouteToTool(4, 8);
+            }
+            EndResponsiveButtonRow();
+
+            GUILayout.Space(5);
+
+            if (GUILayout.Button(IsCompactLayout ? "Material Assembler" : "Material Assembler — Build Materials from a Texture Folder", styleBtnDark, GUILayout.Height(32), GUILayout.MinWidth(0), GUILayout.ExpandWidth(true)))
+                RouteToTool(2, 12);
+
+            GUILayout.Space(5);
+
+            BeginResponsiveButtonRow();
+            using (new EditorGUI.DisabledScope(avatar == null))
+            {
+                if (GUILayout.Button("Animator & Params Doctor", styleBtnDark, GUILayout.Height(32), GUILayout.ExpandWidth(true)))
+                    RouteToTool(4, 13);
+                ResponsiveButtonGap();
+                if (GUILayout.Button("PC / Quest Comparator", styleBtnDark, GUILayout.Height(32), GUILayout.ExpandWidth(true)))
+                    RouteToTool(3, 14);
+                ResponsiveButtonGap();
+                if (GUILayout.Button("Material Inspector++", styleBtnDark, GUILayout.Height(32), GUILayout.ExpandWidth(true)))
+                    RouteToTool(2, 15);
+            }
+            EndResponsiveButtonRow();
+
+            GUILayout.Space(5);
+
+            using (new EditorGUI.DisabledScope(avatar == null))
+            {
+                if (GUILayout.Button("Snapshot & Compare", styleBtnDark, GUILayout.Height(32)))
+                    RouteToTool(0, 18);
+            }
+
+            GUILayout.Space(5);
+
+            using (new EditorGUI.DisabledScope(avatar == null))
+            {
+                if (GUILayout.Button("Animation Swapper & Usage Map", styleBtnDark, GUILayout.Height(32)))
+                    RouteToTool(0, 19);
+            }
+
+            GUILayout.Space(5);
+            if (GUILayout.Button("Preset Library v2", styleBtnDark, GUILayout.Height(32)))
+                RouteToTool(0, 16);
+
+            }
+
+            GUILayout.Space(8);
         }
-        EndResponsiveButtonRow();
-
-        GUILayout.Space(5);
-
-        BeginResponsiveButtonRow();
-        using (new EditorGUI.DisabledScope(avatar == null))
-        {
-            if (GUILayout.Button("Contact Setup", styleBtnDark, GUILayout.Height(32), GUILayout.ExpandWidth(true)))
-                RouteToTool(1, 6);
-            ResponsiveButtonGap();
-            if (GUILayout.Button("Constraint Toolkit", styleBtnDark, GUILayout.Height(32), GUILayout.ExpandWidth(true)))
-                RouteToTool(1, 10);
-            ResponsiveButtonGap();
-            if (GUILayout.Button("Avatar Doctor 2.0", styleBtnDark, GUILayout.Height(32), GUILayout.ExpandWidth(true)))
-                RouteToTool(4, 8);
-        }
-        EndResponsiveButtonRow();
-
-        GUILayout.Space(5);
-
-        if (GUILayout.Button(IsCompactLayout ? "Material Assembler" : "Material Assembler — Build Materials from a Texture Folder", styleBtnDark, GUILayout.Height(32), GUILayout.MinWidth(0), GUILayout.ExpandWidth(true)))
-            RouteToTool(2, 12);
-
-        GUILayout.Space(5);
-
-        BeginResponsiveButtonRow();
-        using (new EditorGUI.DisabledScope(avatar == null))
-        {
-            if (GUILayout.Button("Animator & Params Doctor", styleBtnDark, GUILayout.Height(32), GUILayout.ExpandWidth(true)))
-                RouteToTool(4, 13);
-            ResponsiveButtonGap();
-            if (GUILayout.Button("PC / Quest Comparator", styleBtnDark, GUILayout.Height(32), GUILayout.ExpandWidth(true)))
-                RouteToTool(3, 14);
-            ResponsiveButtonGap();
-            if (GUILayout.Button("Material Inspector++", styleBtnDark, GUILayout.Height(32), GUILayout.ExpandWidth(true)))
-                RouteToTool(2, 15);
-        }
-        EndResponsiveButtonRow();
-
-        GUILayout.Space(5);
-
-        using (new EditorGUI.DisabledScope(avatar == null))
-        {
-            if (GUILayout.Button("Snapshot & Compare", styleBtnDark, GUILayout.Height(32)))
-                RouteToTool(0, 18);
-        }
-
-        GUILayout.Space(5);
-
-        using (new EditorGUI.DisabledScope(avatar == null))
-        {
-            if (GUILayout.Button("Animation Swapper & Usage Map", styleBtnDark, GUILayout.Height(32)))
-                RouteToTool(0, 19);
-        }
-
-        GUILayout.Space(5);
-        if (GUILayout.Button("Preset Library v2", styleBtnDark, GUILayout.Height(32)))
-            RouteToTool(0, 16);
 
         GUILayout.Space(12);
         DrawHomeToolDirectory();
@@ -1144,6 +1157,37 @@ public partial class ChiLittleHelperWindow
                 Run("Create Avatar Snapshot", () => CreateAvatarSnapshot("Manual"));
         }
 
+        EditorGUILayout.EndVertical();
+
+        GUILayout.Space(12);
+        EditorGUILayout.LabelField("Home Layout", new GUIStyle(EditorStyles.boldLabel)
+        {
+            normal = { textColor = ColLavenderText },
+            fontSize = 13
+        });
+        GUILayout.Space(4);
+
+        EditorGUILayout.BeginVertical(styleRowBg);
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.BeginVertical();
+        EditorGUILayout.LabelField("Show Quick Actions on Home", new GUIStyle(EditorStyles.boldLabel)
+        {
+            normal = { textColor = ColTextPrimary }
+        });
+        EditorGUILayout.LabelField(
+            "Hide the curated Quick Actions section when you prefer using the grouped All Tools directory.",
+            styleCardSubtitle);
+        EditorGUILayout.EndVertical();
+        GUILayout.Space(12);
+
+        bool newShowQuickActions = DrawPreferenceSwitch(showHomeQuickActions);
+        if (newShowQuickActions != showHomeQuickActions)
+        {
+            showHomeQuickActions = newShowQuickActions;
+            EditorPrefs.SetBool(PREF_SHOW_HOME_QUICK_ACTIONS, showHomeQuickActions);
+            Repaint();
+        }
+        EditorGUILayout.EndHorizontal();
         EditorGUILayout.EndVertical();
 
         GUILayout.Space(12);

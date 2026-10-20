@@ -6,7 +6,7 @@ A modular Unity Editor toolkit for VRChat avatar creation, diagnostics, optimiza
 
 Chi's Little Helper is currently in the 1.0 release-candidate phase and is available as a VPM/VCC package.
 
-Current package release: **1.0.0-rc.14**
+Current package release: **1.0.0-rc.15**
 
 ## Package ID
 

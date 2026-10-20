@@ -10,7 +10,7 @@ using VRC.SDK3.Avatars.Components;
 
 public partial class ChiLittleHelperWindow : EditorWindow
 {
-    public const string TOOL_VERSION = "1.0.0-rc.14";
+    public const string TOOL_VERSION = "1.0.0-rc.15";
     public const string RELEASE_CHANNEL = "Release Candidate";
 
     static bool Verbose = false;
@@ -76,12 +76,20 @@ public partial class ChiLittleHelperWindow : EditorWindow
     [SerializeField] bool showHome = true;
     [SerializeField] bool homeShowChangelog = true;
     [SerializeField] bool homeShowRoadmap = true;
+    [SerializeField] bool homeShowQuickActions = true;
+    [SerializeField] bool homeShowAllTools = true;
+    [SerializeField] bool homeShowBuildTools = true;
+    [SerializeField] bool homeShowDynamicsTools = true;
+    [SerializeField] bool homeShowMaterialsTools = true;
+    [SerializeField] bool homeShowOptimizeTools = true;
+    [SerializeField] bool homeShowDoctorTools = true;
 
     const string PREF_VRCFURY_FEATURES = "ChiLittleHelper.EnableVRCFuryFeatures";
     const string PREF_VERBOSE_LOGGING = "ChiLittleHelper.VerboseLogging";
     const string PREF_CONFIRM_DESTRUCTIVE = "ChiLittleHelper.ConfirmDestructive";
     const string PREF_AUTO_BACKUP = "ChiLittleHelper.AutoBackup";
     const string PREF_ONBOARDING_DISMISSED = "ChiLittleHelper.OnboardingDismissed";
+    const string PREF_SHOW_HOME_QUICK_ACTIONS = "ChiLittleHelper.ShowHomeQuickActions";
 
     const string PREF_DOCTOR_TRIANGLES = "ChiLittleHelper.Doctor.Triangles";
     const string PREF_DOCTOR_MATERIAL_SLOTS = "ChiLittleHelper.Doctor.MaterialSlots";
@@ -94,6 +102,7 @@ public partial class ChiLittleHelperWindow : EditorWindow
     bool confirmDestructiveActions = true;
     bool autoBackupBeforeDestructive = false;
     bool onboardingDismissed = false;
+    bool showHomeQuickActions = true;
 
     int doctorTriangleThreshold = 70000;
     int doctorMaterialSlotThreshold = 16;
@@ -234,6 +243,7 @@ public partial class ChiLittleHelperWindow : EditorWindow
         confirmDestructiveActions = EditorPrefs.GetBool(PREF_CONFIRM_DESTRUCTIVE, true);
         autoBackupBeforeDestructive = EditorPrefs.GetBool(PREF_AUTO_BACKUP, false);
         onboardingDismissed = EditorPrefs.GetBool(PREF_ONBOARDING_DISMISSED, false);
+        showHomeQuickActions = EditorPrefs.GetBool(PREF_SHOW_HOME_QUICK_ACTIONS, true);
 
         doctorTriangleThreshold = EditorPrefs.GetInt(PREF_DOCTOR_TRIANGLES, 70000);
         doctorMaterialSlotThreshold = EditorPrefs.GetInt(PREF_DOCTOR_MATERIAL_SLOTS, 16);

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.0-rc.15
+- Added collapsible Home sections to reduce clutter.
+- Quick Actions now has its own Show/Hide foldout.
+- The All Tools directory can be collapsed as a whole.
+- Build, Dynamics, Materials, Optimize and Doctor groups can each be expanded/collapsed independently.
+- Added **Settings & Preferences → Home Layout → Show Quick Actions on Home** to completely disable the Quick Actions section when desired.
+- All tool routing, VRCFury visibility rules and no-avatar disabling behavior remain unchanged.
+
 ## 1.0.0-rc.14
 - Added an **All Tools** directory to Home so every module is visible from the main page, not only the curated Quick Actions.
 - Tools are grouped under Build, Dynamics, Materials, Optimize and Doctor and route to the same module pages as the category navigation.

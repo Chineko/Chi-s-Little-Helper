@@ -7,14 +7,17 @@ public partial class ChiLittleHelperWindow
 {
     void DrawHomeToolDirectory()
     {
-        EditorGUILayout.LabelField("All Tools", new GUIStyle(EditorStyles.boldLabel)
-        {
-            normal = { textColor = ColLavenderText },
-            fontSize = 13
-        });
+        if (GUILayout.Button(homeShowAllTools ? "▼  Hide All Tools" : "▶  Show All Tools",
+            styleBtnDark, GUILayout.Height(30), GUILayout.ExpandWidth(true)))
+            homeShowAllTools = !homeShowAllTools;
+
+        if (!homeShowAllTools)
+            return;
+
+        GUILayout.Space(6);
 
         EditorGUILayout.LabelField(
-            "Every module is available here as well as in the category tabs above.",
+            "Every module is available here as well as in the category tabs above. Collapse any category to reduce clutter.",
             styleCardSubtitle);
 
         GUILayout.Space(6);
@@ -36,13 +39,24 @@ public partial class ChiLittleHelperWindow
             if (visible.Count == 0)
                 continue;
 
-            EditorGUILayout.LabelField(CategoryLabels[categoryIndex], new GUIStyle(EditorStyles.boldLabel)
+            bool expanded = GetHomeToolCategoryExpanded(categoryIndex);
+            if (GUILayout.Button(
+                (expanded ? "▼  " : "▶  ") + CategoryLabels[categoryIndex] + "  (" + visible.Count + ")",
+                styleBtnDark,
+                GUILayout.Height(28),
+                GUILayout.ExpandWidth(true)))
             {
-                normal = { textColor = ColTextPrimary },
-                fontSize = 11
-            });
+                SetHomeToolCategoryExpanded(categoryIndex, !expanded);
+                expanded = !expanded;
+            }
 
-            GUILayout.Space(3);
+            if (!expanded)
+            {
+                GUILayout.Space(4);
+                continue;
+            }
+
+            GUILayout.Space(4);
 
             for (int row = 0; row < visible.Count; row += 2)
             {
@@ -69,6 +83,31 @@ public partial class ChiLittleHelperWindow
             }
 
             GUILayout.Space(5);
+        }
+    }
+
+    bool GetHomeToolCategoryExpanded(int categoryIndex)
+    {
+        switch (categoryIndex)
+        {
+            case 0: return homeShowBuildTools;
+            case 1: return homeShowDynamicsTools;
+            case 2: return homeShowMaterialsTools;
+            case 3: return homeShowOptimizeTools;
+            case 4: return homeShowDoctorTools;
+            default: return true;
+        }
+    }
+
+    void SetHomeToolCategoryExpanded(int categoryIndex, bool value)
+    {
+        switch (categoryIndex)
+        {
+            case 0: homeShowBuildTools = value; break;
+            case 1: homeShowDynamicsTools = value; break;
+            case 2: homeShowMaterialsTools = value; break;
+            case 3: homeShowOptimizeTools = value; break;
+            case 4: homeShowDoctorTools = value; break;
         }
     }
 
