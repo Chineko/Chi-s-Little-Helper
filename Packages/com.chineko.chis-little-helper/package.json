@@ -1,7 +1,7 @@
 {
   "name": "com.chineko.chis-little-helper",
   "displayName": "Chi's Little Helper",
-  "version": "1.0.0-rc.15",
+  "version": "1.0.0-rc.16",
   "unity": "2022.3",
   "description": "A modular Unity Editor toolkit for VRChat avatar creation, diagnostics, optimization, VRCFury workflows, animation management, presets, reporting, and release-safety tooling.",
   "author": {

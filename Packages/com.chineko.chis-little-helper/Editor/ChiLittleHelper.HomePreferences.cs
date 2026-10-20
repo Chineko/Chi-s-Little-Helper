@@ -1396,7 +1396,30 @@ public partial class ChiLittleHelperWindow
         EditorGUILayout.BeginVertical(styleRowBg);
         DrawDiagnosticRow("Toolkit", TOOL_VERSION + " · " + RELEASE_CHANNEL);
         DrawDiagnosticRow("Purpose", "VRChat avatar workflow helper");
+        GUILayout.Space(7);
+
+        EditorGUILayout.LabelField(
+            "Support Chi's Little Helper",
+            new GUIStyle(EditorStyles.boldLabel)
+            {
+                normal = { textColor = ColTextPrimary }
+            });
+        EditorGUILayout.LabelField(
+            "If Chi's Little Helper saves you time and you would like to support its development, you can optionally leave a tip on Ko-fi.",
+            styleInfoText);
+
         GUILayout.Space(5);
+        if (HelpButton(
+            "♥  Support on Ko-fi",
+            "Open Chineko's Ko-fi page in your default browser.",
+            styleBtnGrad,
+            GUILayout.Height(32),
+            GUILayout.ExpandWidth(true)))
+        {
+            Application.OpenURL("https://ko-fi.com/chineko0001");
+        }
+
+        GUILayout.Space(9);
 
         EditorGUILayout.LabelField(
             "Known limitations",

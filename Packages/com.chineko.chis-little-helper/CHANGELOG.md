@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0-rc.16
+- Added an optional **Support on Ko-fi** button under **Settings & Preferences → About & Known Limitations**.
+- The button opens `https://ko-fi.com/chineko0001` in the user's default browser.
+- The support prompt is passive and does not use popups, reminders, or donation nags.
+- Added a matching Ko-fi link to the VCC/GitHub Pages landing page.
+
 ## 1.0.0-rc.15
 - Added collapsible Home sections to reduce clutter.
 - Quick Actions now has its own Show/Hide foldout.
