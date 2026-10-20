@@ -26,7 +26,15 @@ Open it from:
 
 ## Installation
 
-Install and update Chi's Little Helper through the VRChat Creator Companion once the repository listing is added to VCC.
+Add the Chi's Little Helper VPM repository to VCC:
+
+`https://raw.githubusercontent.com/Chineko/Chi-s-Little-Helper/main/Website/index.json`
+
+Or use the one-click link:
+
+[VCC: Add Chi's Little Helper Repository](vcc://vpm/addRepo?url=https://raw.githubusercontent.com/Chineko/Chi-s-Little-Helper/main/Website/index.json)
+
+Then open your avatar project in VCC and install **Chi's Little Helper** from **Manage Project → Packages**.
 
 Do not keep an older manual `Assets/Editor` copy installed beside the VPM package. Remove the old copy before switching to the VCC-managed package.
 
