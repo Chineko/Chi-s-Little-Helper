@@ -68,13 +68,22 @@ jobs:
       - name: Commit VPM listing
         shell: bash
         run: |
+          cp Website/index.json /tmp/vpm-index.json
+          rm -rf "$CI_PATH"
+
+          git fetch origin main
+          git reset --hard origin/main
+
+          mkdir -p Website
+          cp /tmp/vpm-index.json Website/index.json
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add Website/index.json
+
           if git diff --cached --quiet; then
             echo "VPM listing is already up to date."
           else
             git commit -m "Update VPM repository listing"
-            git pull --rebase origin main
             git push origin HEAD:main
           fi
