@@ -28,17 +28,25 @@ Current package release: **1.0.0-rc.13**
 
 Before switching to the VCC-managed package, remove any older manually copied Chi's Little Helper folder from your Unity project. Do not keep manual and VPM installations side-by-side.
 
-### One-click repository link
+### Add the repository
 
-[VCC: Add Chi's Little Helper Repository](vcc://vpm/addRepo?url=https://raw.githubusercontent.com/Chineko/Chi-s-Little-Helper/main/Website/index.json)
+GitHub does not make `vcc://` protocol links clickable in README files, so use the repository URL below with VCC.
 
-### Repository URL
+**[Open Chi's Little Helper VPM repository listing](https://raw.githubusercontent.com/Chineko/Chi-s-Little-Helper/main/Website/index.json)**
 
-If the one-click link does not open VCC, add this repository URL manually in the VRChat Creator Companion:
+Repository URL:
 
 `https://raw.githubusercontent.com/Chineko/Chi-s-Little-Helper/main/Website/index.json`
 
-Then open your avatar project in VCC and install **Chi's Little Helper** from **Manage Project → Packages**.
+In the VRChat Creator Companion:
+
+1. Open **Settings → Packages**.
+2. Click **Add Repository**.
+3. Paste the repository URL above and confirm.
+4. Open your avatar project.
+5. Go to **Manage Project → Packages** and install **Chi's Little Helper**.
+
+> A true one-click **Add to VCC** button can be added once a small HTTPS landing page is hosted for the repository; browsers can then hand off from that page to the `vcc://` protocol.
 
 ## Releases and updates
 
