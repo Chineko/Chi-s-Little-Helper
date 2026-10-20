@@ -10,7 +10,7 @@ using VRC.SDK3.Avatars.Components;
 
 public partial class ChiLittleHelperWindow : EditorWindow
 {
-    public const string TOOL_VERSION = "1.0.0-rc.13";
+    public const string TOOL_VERSION = "1.0.0-rc.14";
     public const string RELEASE_CHANNEL = "Release Candidate";
 
     static bool Verbose = false;

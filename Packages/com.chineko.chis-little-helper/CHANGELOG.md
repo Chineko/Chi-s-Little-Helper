@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0-rc.14
+- Added an **All Tools** directory to Home so every module is visible from the main page, not only the curated Quick Actions.
+- Tools are grouped under Build, Dynamics, Materials, Optimize and Doctor and route to the same module pages as the category navigation.
+- VRCFury-only tools respect the existing **Show VRCFury Features** preference.
+- Avatar-dependent tools are disabled when no avatar is selected; Material Assembler and Preset Library remain available without an avatar.
+- The tool directory uses the responsive button layout so compact windows stack safely without horizontal overflow.
+
 ## 1.0.0-rc.13
 - Combined the planned **Animation Swapper** and **Animator Clip Usage Map** into one implemented Build tool: **Animation Swapper & Usage Map**.
 - The tool scans the selected avatar's Animator Controllers and reports AnimationClip references by controller, layer, state/state-machine path, and Blend Tree location.

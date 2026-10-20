@@ -500,6 +500,9 @@ public partial class ChiLittleHelperWindow
         if (GUILayout.Button("Preset Library v2", styleBtnDark, GUILayout.Height(32)))
             RouteToTool(0, 16);
 
+        GUILayout.Space(12);
+        DrawHomeToolDirectory();
+
         EndCard();
 
         GUILayout.Space(10);
