@@ -21,20 +21,46 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import base64
+          import base64, hashlib
+
+          expected = {
+              'part-01.b64': '5709f5b7a62f7f2d780039acad5b2c24065112e801eb0ba3a4b0ce7f8d958c28',
+              'part-02.b64': 'e514b240afa1810433417ca7ea04571d608a7136d8f0f1cfb532fe5f199aab75',
+              'part-03.b64': 'e3aef5d759a8671c639789cfecc990018a901bd57632ec20aeca421a2e3d9cd2',
+              'part-04.b64': '267d31c757b6ad8a08f73a214a6f5aa1d8db3f220394c6e443c15a3fdf487f45',
+              'part-05.b64': '073cbbb45213c1a9084e45a9dbb59abf43e7785308db620f5e27f0276bac8536',
+              'part-06.b64': 'bea835cd0a956ec7cbbce77baa05617625592b3a3b8b3f05875787c3e7ff38fc',
+              'part-07.b64': '57b45eba85aef6f09e12e293eef9412939468dfded12b460cbb2fc8141f4343d',
+              'part-08.b64': 'c21d46d5ba69475822e2430f456e5822e49d70f8f0e7429d946028cf753c6155',
+              'part-09.b64': 'afe12f6aebc8f21d8ccac57df9e16c455086e54cde89e60bab0c902651441c54',
+              'part-10.b64': '8efc576bdac6f5d529ce05a375b12b5b03773d067d9e1e640b9019a6dd7bd9c6',
+              'part-11.b64': '726b517d1858dccbfd92733eda5737fcd5c3a273e3aaa0deca71eedf39826cee',
+              'part-12.b64': '2132fca9b630cbad04da05cf416d3348b0eb2ffeac6f34900e4c1832d65524b6',
+              'part-13.b64': 'c768090a9f436e375fa5e9ab6e07a1a4245bd4be3da702aac25724926750ef9c',
+              'part-14.b64': '16bc11b01b4e52b5b7795842efb3f37280b3ded22da633a164f1c654727079fd',
+              'part-15.b64': 'f55e8be8c4e9fa3b5e9d7a21eadf7fe2d7baf97ebdbaee76cd97b60f3d630d28',
+              'part-16.b64': 'a3d1c071dfe71bf7b77ef5375dcd27ca43d5cccad7cf22d84ac56c58677feb42',
+          }
 
           parts = sorted(Path('.bootstrap').glob('part-*.b64'))
           chunks = []
+          bad = []
           for p in parts:
               text = p.read_text(encoding='utf-8').strip()
-              if p.name == 'part-12.b64' and len(text) == 12001:
-                  text = text[:12000]
+              digest = hashlib.sha256(text.encode('utf-8')).hexdigest()
+              ok = digest == expected.get(p.name)
+              print(f'{p.name}: len={len(text)} sha256={digest} ' + ('OK' if ok else 'MISMATCH'))
+              if not ok:
+                  bad.append(p.name)
               chunks.append(text)
+
+          if bad:
+              raise SystemExit('Payload chunk mismatch: ' + ', '.join(bad))
 
           data = ''.join(chunks)
           assert len(data) == 184104, f'Unexpected payload length: {len(data)}'
-          Path('/tmp/chi-rc13.zip').write_bytes(base64.b64decode(data, validate=False))
-          print(f'Reconstructed {len(parts)} chunks, {len(data)} base64 characters')
+          Path('/tmp/chi-rc13.zip').write_bytes(base64.b64decode(data, validate=True))
+          print(f'Reconstructed {len(parts)} verified chunks, {len(data)} base64 characters')
           PY
           mkdir -p /tmp/chi-rc13
           unzip -q /tmp/chi-rc13.zip -d /tmp/chi-rc13
