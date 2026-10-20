@@ -1,0 +1,4 @@
+# Keep the package source in Git, but ignore other resolved VPM/UPM packages.
+*
+!com.chineko.chis-little-helper/
+!com.chineko.chis-little-helper/**
