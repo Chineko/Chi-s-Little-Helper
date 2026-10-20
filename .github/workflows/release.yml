@@ -2,6 +2,9 @@ name: Build Release
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - .release/REQUEST
 
 permissions:
   contents: write
