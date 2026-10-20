@@ -1,0 +1,71 @@
+name: Build Repo Listing
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: [Build Release]
+    types: [completed]
+  release:
+    types: [published, created, edited, unpublished, deleted, released]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  PACKAGE_NAME: com.chineko.chis-little-helper
+  LIST_PUBLISH_DIRECTORY: Website
+  CI_PATH: ci
+
+jobs:
+  build-listing:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout package repository
+        uses: actions/checkout@v4
+
+      - name: Checkout VRChat package listing automation
+        uses: actions/checkout@v4
+        with:
+          repository: vrchat-community/package-list-action
+          path: ${{ env.CI_PATH }}
+          clean: false
+
+      - name: Restore cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.CI_PATH }}/.nuke/temp
+            ~/.nuget/packages
+          key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj') }}
+
+      - name: Build VPM listing
+        shell: bash
+        run: >-
+          ${{ env.CI_PATH }}/build.cmd BuildRepoListing
+          --root ${{ env.CI_PATH }}
+          --list-publish-directory $GITHUB_WORKSPACE/${{ env.LIST_PUBLISH_DIRECTORY }}
+          --current-package-name ${{ env.PACKAGE_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ env.LIST_PUBLISH_DIRECTORY }}
+
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
