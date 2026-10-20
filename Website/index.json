@@ -6,6 +6,34 @@
   "packages": {
     "com.chineko.chis-little-helper": {
       "versions": {
+        "1.0.0-rc.16": {
+          "name": "com.chineko.chis-little-helper",
+          "displayName": "Chi's Little Helper",
+          "version": "1.0.0-rc.16",
+          "unity": "2022.3",
+          "description": "A modular Unity Editor toolkit for VRChat avatar creation, diagnostics, optimization, VRCFury workflows, animation management, presets, reporting, and release-safety tooling.",
+          "vpmDependencies": {
+            "com.vrchat.avatars": ">=3.5.0"
+          },
+          "changelogUrl": "https://github.com/Chineko/Chi-s-Little-Helper/blob/main/Packages/com.chineko.chis-little-helper/CHANGELOG.md",
+          "author": {
+            "name": "Chineko",
+            "url": "https://github.com/Chineko"
+          },
+          "documentationUrl": "https://github.com/Chineko/Chi-s-Little-Helper",
+          "keywords": [
+            "vrchat",
+            "avatar",
+            "editor",
+            "vrcfury",
+            "optimization",
+            "diagnostics",
+            "animation"
+          ],
+          "license": "MIT",
+          "zipSHA256": "592c3c20dd87125e2a9b78266d2592b2d71e69fdf053a47fa445140bc01bb00e",
+          "url": "https://github.com/Chineko/Chi-s-Little-Helper/releases/download/1.0.0-rc.16/com.chineko.chis-little-helper-1.0.0-rc.16.zip"
+        },
         "1.0.0-rc.15": {
           "name": "com.chineko.chis-little-helper",
           "displayName": "Chi's Little Helper",
