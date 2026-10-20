@@ -28,13 +28,15 @@ Current package release: **1.0.0-rc.13**
 
 Before switching to the VCC-managed package, remove any older manually copied Chi's Little Helper folder from your Unity project. Do not keep manual and VPM installations side-by-side.
 
-### Add the repository
+### One-click installer page
 
-GitHub does not make `vcc://` protocol links clickable in README files, so use the repository URL below with VCC.
+**[Open the Chi's Little Helper VCC install page](https://chineko.github.io/Chi-s-Little-Helper/)**
 
-**[Open Chi's Little Helper VPM repository listing](https://raw.githubusercontent.com/Chineko/Chi-s-Little-Helper/main/Website/index.json)**
+That page includes a real **Add to VCC** button which hands off to the `vcc://` protocol.
 
-Repository URL:
+### Manual repository URL
+
+If the button does not launch VCC, add this repository URL manually:
 
 `https://raw.githubusercontent.com/Chineko/Chi-s-Little-Helper/main/Website/index.json`
 
@@ -46,8 +48,6 @@ In the VRChat Creator Companion:
 4. Open your avatar project.
 5. Go to **Manage Project → Packages** and install **Chi's Little Helper**.
 
-> A true one-click **Add to VCC** button can be added once a small HTTPS landing page is hosted for the repository; browsers can then hand off from that page to the `vcc://` protocol.
-
 ## Releases and updates
 
 The distributable package lives under:
@@ -57,6 +57,8 @@ The distributable package lives under:
 The **Build Release** GitHub Actions workflow packages that directory as a VPM-compatible ZIP and publishes the version from `package.json`.
 
 The **Build Repo Listing** workflow rebuilds the VPM repository listing after releases, so newer package versions can appear as updates in VCC.
+
+The **Deploy VCC Landing Page** workflow publishes the installer page from `docs/` through GitHub Pages.
 
 ## License
 
